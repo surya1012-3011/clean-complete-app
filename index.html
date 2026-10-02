@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>CleanComplex Pro - Society Housekeeping & Management</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+darkMode: 'class',
+theme: {
+extend: {
+colors: {
+brand: {
+50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb',
+700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a',
+}
+}
+}
+}
+</script>
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.phone-container {
+max-width: 440px;
+height: 900px;
+box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+@media (max-width: 640px) {
+.phone-container {
+max-width: 100% !important;
+height: 100vh !important;
+border-radius: 0 !important;
+box-shadow: none !important;
+}
+}
+</style>
+</head>
+<body class="bg-slate-900 text-slate-800 flex flex-col items-center justify-center min-h-screen p-0 sm:p-4 font-sans select-none antialiased">
+
+<!-- Desktop Top Bar -->
+<div class="hidden sm:flex items-center justify-between w-full max-w-xl mb-3 text-slate-300 text-xs px-2">
+<div class="flex items-center space-x-2">
+<span class="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+<span class="font-medium text-white" id="desktopComplexName">Raheja Willows Co-op Hsg Soc</span>
+</div>
+
+<div class="flex items-center space-x-2">
+<button onclick="toggleLanguage()" class="flex items-center gap-1.5 px-3 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white rounded-full font-bold shadow-sm transition">
+<i data-lucide="languages" class="w-3.5 h-3.5 text-blue-400"></i>
+<span id="langBtnText">हिंदी</span>
+</button>
+
+<button onclick="togglePhoneFrame()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded text-slate-300">
+<i data-lucide="smartphone" class="w-3.5 h-3.5 inline"></i> Mobile View
+</button>
+</div>
+</div>
+
+<!-- Mobile Screen Container -->
+<div id="mainContainer" class="phone-container w-full bg-slate-50 rounded-3xl overflow-hidden flex flex-col relative border border-slate-800 transition-all duration-300">
+
+<!-- Android Status Bar -->
+<div class="bg-brand-900 text-white px-5 pt-2.5 pb-1 flex justify-between items-center text-xs tracking-wider z-20">
+<span id="androidClock" class="font-semibold text-slate-200">10:00 AM</span>
+<div class="flex items-center space-x-1.5 text-slate-300">
+<i data-lucide="wifi" class="w-3.5 h-3.5"></i>
+<i data-lucide="signal" class="w-3.5 h-3.5"></i>
+<i data-lucide="battery-charging" class="w-4 h-4 text-emerald-400"></i>
+</div>
+</div>
+
+<!-- App Top Bar -->
+<div class="bg-brand-800 text-white px-4 py-2.5 shadow-md flex justify-between items-center z-20">
+<div class="flex items-center space-x-2 truncate">
+<div class="w-8 h-8 rounded-lg bg-blue-500/30 border border-blue-400/40 flex items-center justify-center shrink-0">
+<i data-lucide="building-2" class="w-4 h-4 text-white"></i>
+</div>
+<div class="truncate">
+<h1 id="topNavComplexName" class="font-bold text-sm tracking-tight truncate leading-tight">Raheja Willows</h1>
+<p id="topNavSubtext" class="text-[10px] text-blue-200 truncate">Society Housekeeping & Ops</p>
+</div>
+</div>
+
+<div class="flex items-center space-x-1.5 shrink-0">
+<button onclick="toggleLanguage()" class="px-2 py-0.5 bg-blue-700/80 hover:bg-blue-600 text-[11px] font-bold rounded border border-blue-400/40 text-blue-100 flex items-center gap-1">
+<span id="quickLangBadge">EN | हिंदी</span>
+</button>
+
+<div class="relative inline-block text-left">
+<select id="roleSelector" onchange="switchRole(this.value)" class="bg-blue-950 text-amber-300 border border-amber-400/40 text-xs font-semibold rounded-lg px-2 py-1.5 appearance-none pr-6 focus:outline-none cursor-pointer shadow-sm">
+<option value="admin">⚙️ Admin (व्यवस्थापक)</option>
+<option value="resident">🏠 Resident (निवासी)</option>
+<option value="staff">🧹 Staff (सफाईकर्मी)</option>
+<option value="supervisor">📋 Supervisor (सुपरवाइजर)</option>
+<option value="secretary">📑 Secretary (सचिव)</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-1.5 text-amber-300">
+<i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Active Persona Info Ribbon -->
+<div id="personaRibbon" class="bg-amber-100 border-b border-amber-200 px-4 py-1.5 text-xs text-amber-900 flex justify-between items-center shadow-inner">
+<div class="flex items-center space-x-1.5 truncate">
+<i data-lucide="user-check" class="w-3.5 h-3.5 text-amber-700 shrink-0"></i>
+<span id="personaLabel" class="font-medium truncate">Facility Super Admin</span>
+</div>
+<span id="societyLocationBadge" class="bg-amber-200/80 px-2 py-0.5 rounded text-[10px] font-semibold text-amber-800 uppercase tracking-wider shrink-0">
+Admin
+</span>
+</div>
+
+<!-- Main Dynamic Content Body -->
+<div id="contentArea" class="flex-1 overflow-y-auto no-scrollbar p-3.5 pb-20 space-y-4 bg-slate-50"></div>
+
+<!-- Bottom Navigation Bar -->
+<div id="bottomNav" class="absolute bottom-0 inset-x-0 bg-white border-t border-slate-200 py-1.5 px-3 flex justify-around items-center text-[10px] text-slate-500 shadow-lg z-20"></div>
+
+</div>
+
+<!-- Hidden Native Device Camera Inputs (Triggers Phone Rear Camera) -->
+<input type="file" id="residentRealCameraInput" accept="image/*" capture="environment" onchange="handleResidentPhotoCaptured(event)" class="hidden" />
+<input type="file" id="staffRealCameraInput" accept="image/*" capture="environment" onchange="handleStaffPhotoCaptured(event)" class="hidden" />
+<input type="file" id="supervisorRealCameraInput" accept="image/*" capture="environment" onchange="handleSupervisorPhotoCaptured(event)" class="hidden" />
+
+<!-- Reusable Global Modal -->
+<div id="globalModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3">
+<div class="bg-white w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+<div class="bg-brand-900 text-white px-4 py-3 flex justify-between items-center">
+<h3 id="modalTitle" class="font-bold text-sm">Modal Title</h3>
+<button onclick="closeModal()" class="text-slate-300 hover:text-white p-1">
+<i data-lucide="x" class="w-4 h-4"></i>
+</button>
+</div>
+<div id="modalBody" class="p-4 overflow-y-auto space-y-3 text-xs text-slate-700"></div>
+</div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toastNotification" class="fixed bottom-16 sm:bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs px-4 py-2.5 rounded-full shadow-2xl flex items-center space-x-2 z-50 pointer-events-none transition-all duration-300 opacity-0 translate-y-3">
+<i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
+<span id="toastMessage">Success</span>
+</div>
+
+<script>
+/* -------------------------------------------------------------
+STATE MANAGEMENT & LOCAL STORAGE
+------------------------------------------------------------- */
+let currentLanguage = 'en';
+let currentRole = 'admin';
+let currentResidentId = 'RES-1';
+let currentStaffId = 'STF-101';
+let currentSupervisorId = 'SUP-1';
+
+let residentTempPhoto = null;
+let pendingTicketIdForStaff = null;
+let pendingTicketIdForSupervisor = null;
+
+let societyProfile = {
+name: "Raheja Willows Co-op Housing Society Ltd.",
+shortName: "Raheja Willows",
+regNo: "MH/BOM/HSG/10892/2014",
+address: "Plot 42, Kandivali East",
+city: "Mumbai, Maharashtra - 400101",
+geoLat: "19.2060° N",
+geoLong: "72.8710° E",
+secretaryName: "Rajesh V. Sharma",
+emergencyContact: "+91 98200 12345"
+};
+
+let buildings = [
+{ id: "bld-1", name: "Tower A (Orchid)", floors: 18, wings: 2, flatsPerWing: 4, ducts: 2, lifts: 3, staircases: 2, lobby: "Grand AC Lobby", clubHouse: "Gym & Yoga Deck" },
+{ id: "bld-2", name: "Tower B (Lotus)", floors: 18, wings: 2, flatsPerWing: 4, ducts: 2, lifts: 3, staircases: 2, lobby: "Double Height", clubHouse: "Badminton Court" },
+{ id: "bld-3", name: "Tower C (Tulip)", floors: 14, wings: 1, flatsPerWing: 4, ducts: 1, lifts: 2, staircases: 2, lobby: "Garden View", clubHouse: "Swimming Pool Area" },
+{ id: "bld-4", name: "Tower D (Marigold)", floors: 14, wings: 1, flatsPerWing: 4, ducts: 1, lifts: 2, staircases: 2, lobby: "Main Gate Lobby", clubHouse: "Banquet Hall" }
+];
+
+let residentsList = [
+{ id: "RES-1", name: "Anil Kapoor", phone: "9820123451", tower: "Tower A (Orchid)", wing: "A", floor: 4, flatNo: "402" },
+{ id: "RES-2", name: "Pooja Hegde", phone: "9820123452", tower: "Tower B (Lotus)", wing: "B", floor: 8, flatNo: "804" },
+{ id: "RES-3", name: "Suresh Menon", phone: "9820123453", tower: "Tower C (Tulip)", wing: "C", floor: 2, flatNo: "201" }
+];
+
+let supervisorsList = [
+{ id: "SUP-1", name: "Vikram Singh", phone: "9811223344", assignedTower: "All Towers" },
+{ id: "SUP-2", name: "Mahesh Kulkarni", phone: "9811223355", assignedTower: "Tower A & B" }
+];
+
+let staffList = [
+{ id: "STF-101", name: "Ramesh Kumar", role: "Lobby & Lift Cleaning", phone: "9876543210", assignedTower: "Tower A (Orchid)", status: "Present", punchIn: "07:30 AM" },
+{ id: "STF-102", name: "Sunita Bai", role: "Ducts & Waste Collection", phone: "9876543211", assignedTower: "Tower B (Lotus)", status: "Present", punchIn: "07:45 AM" },
+{ id: "STF-103", name: "Mohan Lal", role: "Staircase & Basement", phone: "9876543212", assignedTower: "Tower C (Tulip)", status: "Present", punchIn: "08:00 AM" }
+];
+
+let complaints = [
+{
+id: "TKT-1082",
+residentId: "RES-1",
+flat: "Anil Kapoor (A-402)",
+tower: "Tower A (Orchid)",
+category: "Lift Cleanliness",
+urgency: "High",
+desc: "Floor sticky in Passenger Lift 2.",
+status: "proof_submitted",
+assignedTo: "Ramesh Kumar",
+loggedAt: "Today, 08:30 AM",
+residentPhoto: "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?auto=format&fit=crop&w=500&q=80",
+photoProof: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=500&q=80",
+photoTimestamp: "Today, 09:12 AM",
+geoTag: "19.2060° N, 72.8710° E",
+supervisorPhoto: null,
+rating: 5,
+ratingComment: "Promptly sanitized."
+}
+];
+
+const i18n = {
+en: {
+appName: "CleanComplex Pro", resident: "Resident", staff: "Staff", supervisor: "Supervisor", secretary: "Secretary", admin: "Admin",
+customComplexSettings: "Society Identity, Secretary & Address Settings", saveComplexDetails: "Save Society Details",
+societyNameLabel: "Complex / Society Name", societyShortNameLabel: "Short Display Name",
+societyRegNoLabel: "Govt Registration / RERA No.", societyAddressLabel: "Society Postal Address",
+societyCityLabel: "City, State & Pincode", societyLatLabel: "Latitude (Watermark)", societyLongLabel: "Longitude (Watermark)",
+secretaryNameLabel: "Building Secretary Name", emergencyContactLabel: "Housekeeping Helpline Phone",
+fileComplaint: "Log Housekeeping Complaint", complaintPlaceholder: "e.g., Spill in Lobby, garbage chute odor...",
+selectCategory: "Select Issue Category", urgency: "Urgency Level", submitTicket: "Submit Complaint",
+myComplaints: "Recent Society Complaints", punchIn: "GPS Geo-Punch In", punchOut: "Duty End / Punch Out",
+captureProof: "Capture Cleaned Proof", authorizeTask: "Approve Resolution", rejectTask: "Reject / Redo",
+exportCsv: "Download CSV Audit Log", towersOverview: "Master Infrastructure & Towers Configuration",
+addBuilding: "+ Add New Tower / Wing", editBuilding: "Edit Tower", deleteBuilding: "Delete Tower",
+saveTower: "Save Tower Details", floors: "Floors", wings: "Wings", flatsPerWing: "Flats Per Wing",
+lifts: "Lifts", ducts: "Garbage Ducts", staircases: "Staircases", lobby: "Lobby Type", clubHouse: "Clubhouse / Amenities",
+residentsDirectory: "Residents Directory", staffDirectory: "Housekeeping Staff Directory",
+supervisorsDirectory: "Supervisors Directory", addResident: "+ Single Resident", addStaff: "+ Add Cleaner",
+addSupervisor: "+ Add Supervisor", saveResident: "Save Resident Details", saveStaff: "Save Staff Details",
+saveSupervisor: "Save Supervisor Details", edit: "Edit", delete: "Delete", wing: "Wing", floor: "Floor", flat: "Flat No",
+uploadCsv: "Upload CSV", downloadSampleCsv: "Sample CSV",
+clickIssuePhoto: "Click Photo with Phone Camera", photoAttached: "Photo Attached ✓",
+supervisorAuditPhoto: "Audit Camera Photo"
+},
+hi: {
+appName: "क्लीन कॉम्प्लेक्स प्रो", resident: "निवासी", staff: "सफाई कर्मचारी", supervisor: "सुपरवाइजर", secretary: "सोसायटी सचिव", admin: "व्यवस्थापक (Admin)",
+customComplexSettings: "सोसायटी नाम, सचिव व पता सेटिंग्स", saveComplexDetails: "सोसायटी विवरण सुरक्षित करें",
+societyNameLabel: "सोसायटी / कॉम्प्लेक्स का नाम", societyShortNameLabel: "संक्षिप्त नाम",
+societyRegNoLabel: "पंजीकरण संख्या / RERA नंबर", societyAddressLabel: "सोसायटी का पता",
+societyCityLabel: "शहर व पिनकोड", societyLatLabel: "अक्षांश (Latitude)", societyLongLabel: "देशांतर (Longitude)",
+secretaryNameLabel: "सोसायटी सचिव का नाम", emergencyContactLabel: "हाउसकीपिंग हेल्पलाइन नंबर",
+fileComplaint: "सफाई शिकायत दर्ज करें", complaintPlaceholder: "जैसे: लॉबी में कचरा, लिफ्ट गंदी है...",
+selectCategory: "समस्या का प्रकार", urgency: "प्राथमिकता", submitTicket: "शिकायत सबमिट करें",
+myComplaints: "सोसायटी शिकायतें", punchIn: "जीपीएस हाजिरी लगाएं", punchOut: "ड्यूटी समाप्त",
+captureProof: "सफाई फोटो खींचें", authorizeTask: "स्वीकृत करें", rejectTask: "अस्वीकृत करें",
+exportCsv: "मासिक CSV रिपोर्ट डाउनलोड करें", towersOverview: "इमारतें व बुनियादी ढांचा मास्टर कॉन्फ़िगरेशन",
+addBuilding: "+ नई इमारत / विंग जोड़ें", editBuilding: "इमारत विवरण बदलें", deleteBuilding: "इमारत हटाएं",
+saveTower: "इमारत सुरक्षित करें", floors: "मंजिलें", wings: "विंग्स संख्या", flatsPerWing: "प्रति विंग फ्लैट्स",
+lifts: "लिफ्ट संख्या", ducts: "कचरा डक्ट्स", staircases: "सीढ़ियां", lobby: "लॉबी प्रकार", clubHouse: "क्लब हाउस / सुविधाएं",
+residentsDirectory: "निवासी विवरण", staffDirectory: "सफाई कर्मचारी विवरण",
+supervisorsDirectory: "सुपरवाइजर विवरण", addResident: "+ एकल निवासी", addStaff: "+ नया सफाईकर्मी",
+addSupervisor: "+ नया सुपरवाइजर", saveResident: "निवासी सुरक्षित करें", saveStaff: "कर्मचारी सुरक्षित करें",
+saveSupervisor: "सुपरवाइजर सुरक्षित करें", edit: "बदलें", delete: "हटाएं", wing: "विंग", floor: "मंजिल", flat: "फ्लैट नं.",
+uploadCsv: "CSV अपलोड करें", downloadSampleCsv: "सैंपल CSV",
+clickIssuePhoto: "कैमरा से समस्या की फोटो खींचें", photoAttached: "फोटो संलग्न है ✓",
+supervisorAuditPhoto: "निरीक्षण फोटो खींचें"
+}
+};
+
+function t(k) { return (i18n[currentLanguage] && i18n[currentLanguage][k]) || (i18n['en'][k] || k); }
+
+function loadSavedData() {
+try {
+const p = localStorage.getItem('cc_full_p'); if (p) societyProfile = JSON.parse(p);
+const b = localStorage.getItem('cc_full_b'); if (b) buildings = JSON.parse(b);
+const r = localStorage.getItem('cc_full_r'); if (r) residentsList = JSON.parse(r);
+const s = localStorage.getItem('cc_full_s'); if (s) staffList = JSON.parse(s);
+const sup = localStorage.getItem('cc_full_sup'); if (sup) supervisorsList = JSON.parse(sup);
+const c = localStorage.getItem('cc_full_c'); if (c) complaints = JSON.parse(c);
+const l = localStorage.getItem('cc_full_l'); if (l) currentLanguage = l;
+} catch (e) { console.error("Storage load error", e); }
+}
+
+function saveData() {
+localStorage.setItem('cc_full_p', JSON.stringify(societyProfile));
+localStorage.setItem('cc_full_b', JSON.stringify(buildings));
+localStorage.setItem('cc_full_r', JSON.stringify(residentsList));
+localStorage.setItem('cc_full_s', JSON.stringify(staffList));
+localStorage.setItem('cc_full_sup', JSON.stringify(supervisorsList));
+localStorage.setItem('cc_full_c', JSON.stringify(complaints));
+localStorage.setItem('cc_full_l', currentLanguage);
+}
+
+function toggleLanguage() {
+currentLanguage = (currentLanguage === 'en') ? 'hi' : 'en';
+saveData();
+updateTopBranding();
+renderApp();
+showToast(currentLanguage === 'hi' ? "हिंदी भाषा चुनी गई" : "Switched to English");
+}
+
+function switchRole(role) {
+currentRole = role;
+document.getElementById('roleSelector').value = role;
+updateRibbon();
+renderApp();
+}
+
+function updateTopBranding() {
+document.getElementById('desktopComplexName').textContent = societyProfile.name;
+document.getElementById('topNavComplexName').textContent = societyProfile.shortName || societyProfile.name;
+document.getElementById('topNavSubtext').textContent = `${societyProfile.city.split(',')[0]} • ${buildings.length} Towers • ${residentsList.length} Residents`;
+const btn = document.getElementById('langBtnText');
+if (btn) btn.textContent = currentLanguage === 'en' ? 'हिंदी' : 'English';
+const q = document.getElementById('quickLangBadge');
+if (q) q.textContent = currentLanguage === 'en' ? 'EN | हिंदी' : 'हिंदी | EN';
+}
+
+function updateRibbon() {
+const ribbon = document.getElementById('personaLabel');
+const badge = document.getElementById('societyLocationBadge');
+
+if (currentRole === 'resident') {
+const curRes = residentsList.find(r => r.id === currentResidentId) || residentsList[0];
+ribbon.innerHTML = `<span class="font-bold text-blue-900">${curRes ? curRes.name + ' (' + curRes.wing + '-' + curRes.flatNo + ')' : 'Resident'}</span> • Flr ${curRes ? curRes.floor : ''}`;
+badge.textContent = "Flat Portal"; badge.className = "bg-blue-200 text-blue-900 px-2 py-0.5 rounded text-[10px] font-bold";
+} else if (currentRole === 'staff') {
+const curStf = staffList.find(s => s.id === currentStaffId) || staffList[0];
+ribbon.innerHTML = `<span class="font-bold text-emerald-900">${curStf ? curStf.name + ' (' + curStf.id + ')' : 'Staff'}</span> • Field Staff`;
+badge.textContent = "Housekeeping"; badge.className = "bg-emerald-200 text-emerald-900 px-2 py-0.5 rounded text-[10px] font-bold";
+} else if (currentRole === 'supervisor') {
+const curSup = supervisorsList.find(s => s.id === currentSupervisorId) || supervisorsList[0];
+ribbon.innerHTML = `<span class="font-bold text-amber-900">${curSup ? curSup.name : 'Supervisor'}</span> • In-Charge`;
+badge.textContent = "Supervision"; badge.className = "bg-amber-200 text-amber-900 px-2 py-0.5 rounded text-[10px] font-bold";
+} else if (currentRole === 'secretary') {
+ribbon.innerHTML = `<span class="font-bold text-purple-900">${societyProfile.secretaryName}</span> • Secretary`;
+badge.textContent = "Secretary"; badge.className = "bg-purple-200 text-purple-900 px-2 py-0.5 rounded text-[10px] font-bold";
+} else {
+ribbon.innerHTML = `<span class="font-bold text-slate-900">Facility Super Admin</span> • Master Config`;
+badge.textContent = "Admin"; badge.className = "bg-slate-300 text-slate-900 px-2 py-0.5 rounded text-[10px] font-bold";
+}
+}
+
+/* -------------------------------------------------------------
+ADMIN MASTER CONFIGURATION
+------------------------------------------------------------- */
+function renderAdminView() {
+const totalComplexFlats = buildings.reduce((acc, b) => acc + (b.floors * (b.wings || 1) * (b.flatsPerWing || 4)), 0);
+
+return `
+<!-- Society Identity, Secretary & Address Settings -->
+<div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3">
+<div class="flex items-center space-x-2 text-slate-900 border-b border-slate-100 pb-2">
+<div class="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center">
+<i data-lucide="sliders" class="w-4 h-4"></i>
+</div>
+<div>
+<h3 class="font-bold text-xs uppercase tracking-wider text-slate-800">${t('customComplexSettings')}</h3>
+<p class="text-[10px] text-slate-500">Live: ${buildings.length} Towers • ${totalComplexFlats} Total Flats</p>
+</div>
+</div>
+
+<form onsubmit="handleUpdateComplexDetails(event)" class="space-y-2.5 text-xs">
+<div>
+<label class="block font-semibold mb-1">${t('societyNameLabel')} *</label>
+<input type="text" id="cfgComplexName" required value="${societyProfile.name}" class="w-full p-2 border rounded-xl" />
+</div>
+
+<div class="grid grid-cols-2 gap-2">
+<div>
+<label class="block font-semibold mb-1">${t('societyShortNameLabel')}</label>
+<input type="text" id="cfgShortName" required value="${societyProfile.shortName}" class="w-full p-2 border rounded-xl" />
+</div>
+<div>
+<label class="block font-semibold mb-1">${t('societyRegNoLabel')}</label>
+<input type="text" id="cfgRegNo" value="${societyProfile.regNo}" class="w-full p-2 border rounded-xl" />
+</div>
+</div>
+
+<div class="grid grid-cols-2 gap-2 bg-blue-50/60 p-2.5 rounded-xl border border-blue-100">
+<div>
+<label class="block font-bold text-blue-900 mb-1">${t('secretaryNameLabel')} *</label>
+<input type="text" id="cfgSecName" required value="${societyProfile.secretaryName}" class="w-full p-2 border border-blue-200 rounded-lg bg-white" />
+</div>
+<div>
+<label class="block font-bold text-blue-900 mb-1">${t('emergencyContactLabel')}</label>
+<input type="text" id="cfgEmergency" value="${societyProfile.emergencyContact}" class="w-full p-2 border border-blue-200 rounded-lg bg-white" />
+</div>
+</div>
+
+<div>
+<label class="block font-semibold mb-1">${t('societyAddressLabel')}</label>
+<input type="text" id="cfgAddress" required value="${societyProfile.address}" class="w-full p-2 border rounded-xl" />
+</div>
+
+<div>
+<label class="block font-semibold mb-1">${t('societyCityLabel')}</label>
+<input type="text" id="cfgCity" required value="${societyProfile.city}" class="w-full p-2 border rounded-xl" />
+</div>
+
+<div class="grid grid-cols-2 gap-2">
+<div>
+<label class="block font-semibold mb-1">${t('societyLatLabel')}</label>
+<input type="text" id="cfgLat" value="${societyProfile.geoLat}" class="w-full p-2 border rounded-xl font-mono" />
+</div>
+<div>
+<label class="block font-semibold mb-1">${t('societyLongLabel')}</label>
+<input type="text" id="cfgLong" value="${societyProfile.geoLong}" class="w-full p-2 border rounded-xl font-mono" />
+</div>
+</div>
+
+<button type="submit" class="w-full bg-slate-900 text-white font-bold py-2 rounded-xl mt-2">
+${t('saveComplexDetails')}
+</button>
+</form>
+</div>
+
+<!-- 1. MASTER TOWERS & INFRASTRUCTURE -->
+<div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3">
+<div class="flex justify-between items-center border-b border-slate-100 pb-2">
+<div>
+<h3 class="font-bold text-xs uppercase tracking-wider text-slate-800">${t('towersOverview')}</h3>
+<p class="text-[10px] text-slate-500">Edit, add or remove towers & amenities</p>
+</div>
+<button onclick="openTowerModal()" class="bg-brand-600 hover:bg-brand-700 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-lg flex items-center space-x-1 shadow-sm">
+<i data-lucide="plus" class="w-3.5 h-3.5"></i>
+<span>${t('addBuilding')}</span>
+</button>
+</div>
+
+<div class="space-y-2.5">
+${buildings.map(b => {
+const bldFlats = (b.floors || 1) * (b.wings || 1) * (b.flatsPerWing || 4);
+return `
+<div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-2 relative">
+<div class="flex justify-between items-start">
+<div>
+<span class="font-bold text-slate-900 text-sm">${b.name}</span>
+<p class="text-[10px] text-blue-700 font-semibold mt-0.5">
+${b.floors} Floors • ${b.wings || 1} Wing(s) • ${bldFlats} Flats (${b.flatsPerWing || 4}/wing)
+</p>
+</div>
+<div class="flex items-center space-x-1">
+<button onclick="openTowerModal('${b.id}')" title="Edit Tower" class="p-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg">
+<i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+</button>
+<button onclick="deleteBuilding('${b.id}')" title="Delete Tower" class="p-1.5 bg-rose-100 hover:bg-rose-200 text-rose-700 rounded-lg">
+<i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+</button>
+</div>
+</div>
+
+<div class="grid grid-cols-4 gap-1.5 bg-white p-2 rounded-lg border border-slate-200 text-[10px] text-slate-600">
+<div class="text-center"><span class="block text-slate-400">Lifts</span><strong>${b.lifts}</strong></div>
+<div class="text-center"><span class="block text-slate-400">Ducts</span><strong>${b.ducts}</strong></div>
+<div class="text-center"><span class="block text-slate-400">Stairs</span><strong>${b.staircases}</strong></div>
+<div class="text-center"><span class="block text-slate-400">Units</span><strong class="text-emerald-600">${bldFlats}</strong></div>
+</div>
+
+<div class="text-[10px] text-slate-500 pt-0.5 flex flex-col space-y-0.5">
+<span>🏢 <strong>Lobby:</strong> ${b.lobby}</span>
+<span>🏸 <strong>Amenity:</strong> ${b.clubHouse}</span>
+</div>
+</div>
+`;
+}).join('')}
+</div>
+</div>
+
+<!-- 2. RESIDENTS DIRECTORY (Single Add & CSV Bulk Upload) -->
+<div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3">
+<div class="flex flex-col gap-2 border-b border-slate-100 pb-2.5">
+<div class="flex justify-between items-center">
+<div>
+<h3 class="font-bold text-xs uppercase tracking-wider text-slate-800">${t('residentsDirectory')}</h3>
+<p class="text-[10px] text-slate-500">${residentsList.length} Residents Registered</p>
+</div>
+<button onclick="downloadResidentSampleCSV()" class="text-[10px] font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 px-2 py-1 rounded flex items-center gap-1 border">
+<i data-lucide="file-spreadsheet" class="w-3 h-3 text-emerald-600"></i>
+<span>${t('downloadSampleCsv')}</span>
+</button>
+</div>
+
+<div class="flex items-center gap-2 pt-1">
+<button onclick="openResidentModal()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold py-1.5 px-2 rounded-lg flex items-center justify-center space-x-1 shadow-sm">
+<i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+<span>${t('addResident')}</span>
+</button>
+
+<label class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold py-1.5 px-2 rounded-lg flex items-center justify-center space-x-1 shadow-sm cursor-pointer">
+<i data-lucide="upload" class="w-3.5 h-3.5"></i>
+<span>${t('uploadCsv')}</span>
+<input type="file" id="residentCsvFileInput" accept=".csv,text/csv" onchange="handleResidentCSVUpload(event)" class="hidden" />
+</label>
+</div>
+</div>
+
+<div class="space-y-2 max-h-72 overflow-y-auto pr-1">
+${residentsList.map(res => `
+<div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs flex justify-between items-center">
+<div class="truncate pr-2">
+<span class="font-bold text-slate-900 truncate">${res.name}</span>
+<p class="text-[10px] text-blue-700 font-semibold truncate">
+${res.tower} • W-${res.wing} • Flr ${res.floor} • <strong>Flat${res.flatNo}</strong>
+</p>
+<p class="text-[9px] text-slate-400 font-mono">📞 ${res.phone}</p>
+</div>
+<div class="flex items-center space-x-1 shrink-0">
+<button onclick="openResidentModal('${res.id}')" title="Edit Resident" class="p-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg">
+<i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+</button>
+<button onclick="deleteResident('${res.id}')" title="Delete Resident" class="p-1.5 bg-rose-100 hover:bg-rose-200 text-rose-700 rounded-lg">
+<i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+</button>
+</div>
+</div>
+`).join('')}
+</div>
+</div>
+
+<!-- 3. SUPERVISORS DIRECTORY (Add, Edit, Delete Supervisors) -->
+<div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3">
+<div class="flex justify-between items-center border-b border-slate-100 pb-2">
+<div>
+<h3 class="font-bold text-xs uppercase tracking-wider text-slate-800">${t('supervisorsDirectory')}</h3>
+<p class="text-[10px] text-slate-500">${supervisorsList.length} Supervisors Configured</p>
+</div>
+<button onclick="openSupervisorModal()" class="bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-lg flex items-center space-x-1 shadow-sm">
+<i data-lucide="plus" class="w-3.5 h-3.5"></i>
+<span>${t('addSupervisor')}</span>
+</button>
+</div>
+
+<div class="space-y-2">
+${supervisorsList.map(sup => `
+<div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs flex justify-between items-center">
+<div>
+<span class="font-bold text-slate-900">${sup.name}</span>
+<p class="text-[10px] text-amber-700 font-semibold">Jurisdiction: ${sup.assignedTower}</p>
+<p class="text-[9px] text-slate-400 font-mono">📞 ${sup.phone} \vert{} ID:${sup.id}</p>
+</div>
+<div class="flex items-center space-x-1">
+<button onclick="openSupervisorModal('${sup.id}')" title="Edit Supervisor" class="p-1.5 bg-amber-100 hover:bg-amber-200 text-amber-800 rounded-lg">
+<i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+</button>
+<button onclick="deleteSupervisor('${sup.id}')" title="Delete Supervisor" class="p-1.5 bg-rose-100 hover:bg-rose-200 text-rose-700 rounded-lg">
+<i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+</button>
+</div>
+</div>
+`).join('')}
+</div>
+</div>
+
+<!-- 4. HOUSEKEEPING STAFF DIRECTORY (Add, Edit, Delete Staff) -->
+<div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3">
+<div class="flex justify-between items-center border-b border-slate-100 pb-2">
+<div>
+<h3 class="font-bold text-xs uppercase tracking-wider text-slate-800">${t('staffDirectory')}</h3>
+<p class="text-[10px] text-slate-500">${staffList.length} Active Cleaners</p>
+</div>
+<button onclick="openStaffModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-lg flex items-center space-x-1 shadow-sm">
+<i data-lucide="plus" class="w-3.5 h-3.5"></i>
+<span>${t('addStaff')}</span>
+</button>
+</div>
+
+<div class="space-y-2">
+${staffList.map(stf => `
+<div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs flex justify-between items-center">
+<div>
+<span class="font-bold text-slate-900">${stf.name}</span>
+<p class="text-[10px] text-emerald-700 font-semibold">${stf.role} •${stf.assignedTower}</p>
+<p class="text-[9px] text-slate-400 font-mono">ID: ${stf.id} \vert{} 📞 ${stf.phone}</p>
+</div>
+<div class="flex items-center space-x-1">
+<button onclick="openStaffModal('${stf.id}')" title="Edit Staff" class="p-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 rounded-lg">
+<i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+</button>
+<button onclick="deleteStaff('${stf.id}')" title="Delete Staff" class="p-1.5 bg-rose-100 hover:bg-rose-200 text-rose-700 rounded-lg">
+<i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+</button>
+</div>
+</div>
+`).join('')}
+</div>
+</div>
+`;
+}
+
+/* -------------------------------------------------------------
+TOWER CRUD
+------------------------------------------------------------- */
+function openTowerModal(towerId = null) {
+const isEdit = towerId !== null;
+const tower = isEdit ? buildings.find(b => b.id === towerId) : {
+id: "bld-" + Date.now(),
+name: "",
+floors: 14,
+wings: 1,
+flatsPerWing: 4,
+ducts: 1,
+lifts: 2,
+staircases: 2,
+lobby: "Standard Finished Lobby",
+clubHouse: "Common Society Amenity"
+};
+
+const modal = document.getElementById('globalModal');
+document.getElementById('modalTitle').textContent = isEdit ? t('editBuilding') : t('addBuilding');
+
+document.getElementById('modalBody').innerHTML = `
+<form onsubmit="handleSaveTower(event, '${tower.id}', ${isEdit})" class="space-y-2.5 text-xs">
+<div>
+<label class="block font-semibold mb-1 text-slate-700">Tower / Block Name *</label>
+<input type="text" id="twName" required value="${tower.name}" placeholder="e.g., Tower E (Carnation)" class="w-full p-2 border border-slate-300 rounded-xl" />
+</div>
+
+<div class="grid grid-cols-3 gap-2">
+<div>
+<label class="block font-semibold mb-1 text-slate-700">${t('floors')} *</label>
+<input type="number" id="twFloors" required min="1" max="99" value="${tower.floors}" class="w-full p-2 border border-slate-300 rounded-xl" />
+</div>
+<div>
+<label class="block font-semibold mb-1 text-slate-700">${t('wings')} *</label>
+<input type="number" id="twWings" required min="1" max="10" value="${tower.wings || 1}" class="w-full p-2 border border-slate-300 rounded-xl" />
+</div>
+<div>
+<label class="block font-semibold mb-1 text-slate-700">${t('flatsPerWing')} *</label>
+<input type="number" id="twFlatsPerWing" required min="1" max="20" value="${tower.flatsPerWing || 4}" class="w-full p-2 border border-slate-300 rounded-xl" />
+</div>
+</div>
+
+<div class="grid grid-cols-3 gap-2">
+<div>
+<label class="block font-semibold mb-1 text-slate-700">${t('lifts')} *</label>
+<input type="number" id="twLifts" required min="1" max="20" value="${tower.lifts}" class="w-full p-2 border border-slate-300 rounded-xl" />
+</div>
+<div>
+<label class="block font-semibold mb-1 text-slate-700">${t('ducts')} *</label>
+<input type="number" id="twDucts" required min="0" max="20" value="${tower.ducts}" class="w-full p-2 border border-slate-300 rounded-xl" />
+</div>
+<div>
+<label class="block font-semibold mb-1 text-slate-700">${t('staircases')} *</label>
+<input type="number" id="twStairs" required min="1" max="10" value="${tower.staircases}" class="w-full p-2 border border-slate-300 rounded-xl" />
+</div>
+</div>
+
+<div>
+<label class="block font-semibold mb-1 text-slate-700">${t('lobby')}</label>
+<input type="text" id="twLobby" value="${tower.lobby}" placeholder="e.g., Double Height AC Lobby" class="w-full p-2 border border-slate-300 rounded-xl" />
+</div>
+
+<div>
+<label class="block font-semibold mb-1 text-slate-700">${t('clubHouse')}</label>
+<input type="text" id="twClub" value="${tower.clubHouse}" placeholder="e.g., Table Tennis & Gymnasium" class="w-full p-2 border border-slate-300 rounded-xl" />
+</div>
+
+<div class="pt-2 flex gap-2">
+<button type="button" onclick="closeModal()" class="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl">Cancel</button>
+<button type="submit" class="w-2/3 bg-brand-600 hover:bg-brand-700 text-white font-bold py-2 rounded-xl shadow-sm">
+${t('saveTower')}
+</button>
+</div>
+</form>
+`;
+
+modal.classList.remove('hidden');
+lucide.createIcons();
+}
+
+function handleSaveTower(e, towerId, isEdit) {
+ e.preventDefault();
+ const name = document.getElementById('twName').value.trim();
+ const floors = parseInt(document.getElementById('twFloors').value) || 1;
+ const wings = parseInt(document.getElementById('twWings').value) || 1;
+ const flatsPerWing = parseInt(document.getElementById('twFlatsPerWing').value) || 4;
+ const lifts = parseInt(document.getElementById('twLifts').value) || 1;
+ const ducts = parseInt(document.getElementById('twDucts').value) || 0;
+ const staircases = parseInt(document.getElementById('twStairs').value) || 1;
+ const lobby = document.getElementById('twLobby').value.trim() || "Standard Lobby";
+ const clubHouse = document.getElementById('twClub').value.trim() || "Common Amenity";
+
+ if (isEdit) {
+ const index = buildings.findIndex(b => b.id === towerId);
+ if (index !== -1) {
+ buildings[index] = { id: towerId, name, floors, wings, flatsPerWing, lifts, ducts, staircases, lobby, clubHouse };
+ }
+ } else {
+ buildings.push({ id: towerId, name, floors, wings, flatsPerWing, lifts, ducts, staircases, lobby, clubHouse });
+ }
+
+ saveData();
+ closeModal();
+ updateTopBranding();
+ renderApp();
+ showToast(isEdit ? "Tower updated successfully!" : "New tower added to master complex!");
+}
+
+function deleteBuilding(towerId) {
+if (buildings.length <= 1) {
+alert("The complex must have at least 1 tower configured.");
+return;
+}
+if (confirm("Are you sure you want to remove this tower from the master configuration?")) {
+buildings = buildings.filter(b => b.id !== towerId);
+saveData();
+updateTopBranding();
+renderApp();
+showToast("Tower deleted from master configuration.");
+}
+}
+
+/* -------------------------------------------------------------
+STAFF & SUPERVISOR MODALS (ADD & EDIT)
+------------------------------------------------------------- */
+function openStaffModal(stfId = null) {
+const isEdit = stfId !== null;
+const stf = isEdit ? staffList.find(s => s.id === stfId) : {
+id: "STF-" + (100 + staffList.length + 1),
+name: "",
+phone: "9876500000",
+role: "General Housekeeping",
+assignedTower: buildings[0] ? buildings[0].name : "Tower A",
+status: "Present",
+punchIn: "08:00 AM"
+};
+
+const modal = document.getElementById('globalModal');
+document.getElementById('modalTitle').textContent = isEdit ? "Edit Staff Details" : t('addStaff');
+document.getElementById('modalBody').innerHTML = `
+<form onsubmit="handleSaveStaff(event, '${stf.id}', ${isEdit})" class="space-y-2.5 text-xs">
+<div>
+<label class="block font-semibold mb-1 text-slate-700">Staff Member Full Name *</label>
+<input type="text" id="stmName" required value="${stf.name}" placeholder="e.g., Ramesh Kumar" class="w-full p-2 border rounded-xl" />
+</div>
+<div class="grid grid-cols-2 gap-2">
+<div>
+<label class="block font-semibold mb-1 text-slate-700">Staff Badge ID *</label>
+<input type="text" id="stmId" required value="${stf.id}" class="w-full p-2 border rounded-xl font-mono uppercase" />
+</div>
+<div>
+<label class="block font-semibold mb-1 text-slate-700">Phone Number *</label>
+<input type="text" id="stmPhone" required value="${stf.phone}" class="w-full p-2 border rounded-xl font-mono" />
+</div>
+</div>
+<div>
+<label class="block font-semibold mb-1 text-slate-700">Primary Assignment / Role *</label>
+<input type="text" id="stmRole" required value="${stf.role}" placeholder="e.g., Lobby & Lift Specialist" class="w-full p-2 border rounded-xl" />
+</div>
+<div>
+<label class="block font-semibold mb-1 text-slate-700">Assigned Tower / Zone</label>
+<select id="stmTower" class="w-full p-2 border rounded-xl">
+${buildings.map(b => `<option value="${b.name}" ${stf.assignedTower === b.name ? 'selected' : ''}>${b.name}</option>`).join('')}
+</select>
+</div>
+<div class="pt-2 flex gap-2">
+<button type="button" onclick="closeModal()" class="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl">Cancel</button>
+<button type="submit" class="w-2/3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-xl shadow-sm">
+${t('saveStaff')}
+</button>
+</div>
+</form>
+`;
+modal.classList.remove('hidden');
+lucide.createIcons();
+}
+
+function handleSaveStaff(e, originalId, isEdit) {
+ e.preventDefault();
+ const name = document.getElementById('stmName').value.trim();
+ const newId = document.getElementById('stmId').value.trim().toUpperCase();
+ const phone = document.getElementById('stmPhone').value.trim();
+ const role = document.getElementById('stmRole').value.trim();
+ const assignedTower = document.getElementById('stmTower').value;
+
+ if (isEdit) {
+ const idx = staffList.findIndex(s => s.id === originalId);
+ if (idx !== -1) {
+ staffList[idx].name = name;
+ staffList[idx].id = newId;
+ staffList[idx].phone = phone;
+ staffList[idx].role = role;
+ staffList[idx].assignedTower = assignedTower;
+ }
+ } else {
+ staffList.push({ id: newId, name, phone, role, assignedTower, status: "Present", punchIn: "08:00 AM" });
+ }
+
+ saveData();
+ closeModal();
+ updateRibbon();
+ renderApp();
+ showToast(isEdit ? "Staff member updated!" : "New cleaner registered!");
+}
+
+function deleteStaff(stfId) {
+if (staffList.length <= 1) {
+alert("At least 1 cleaner must remain active.");
+return;
+}
+if (confirm("Delete this staff member?")) {
+staffList = staffList.filter(s => s.id !== stfId);
+if (currentStaffId === stfId) currentStaffId = staffList[0].id;
+saveData();
+updateRibbon();
+renderApp();
+showToast("Staff record removed.");
+}
+}
+
+function openSupervisorModal(supId = null) {
+const isEdit = supId !== null;
+const sup = isEdit ? supervisorsList.find(s => s.id === supId) : {
+id: "SUP-" + (supervisorsList.length + 1),
+name: "",
+phone: "9811000000",
+assignedTower: "All Towers"
+};
+
+const modal = document.getElementById('globalModal');
+document.getElementById('modalTitle').textContent = isEdit ? "Edit Supervisor" : t('addSupervisor');
+document.getElementById('modalBody').innerHTML = `
+<form onsubmit="handleSaveSupervisor(event, '${sup.id}', ${isEdit})" class="space-y-2.5 text-xs">
+<div>
+<label class="block font-semibold mb-1 text-slate-700">Supervisor Name *</label>
+<input type="text" id="smName" required value="${sup.name}" placeholder="e.g., Vikram Singh" class="w-full p-2 border rounded-xl" />
+</div>
+<div>
+<label class="block font-semibold mb-1 text-slate-700">Phone Number *</label>
+<input type="text" id="smPhone" required value="${sup.phone}" class="w-full p-2 border rounded-xl font-mono" />
+</div>
+<div>
+<label class="block font-semibold mb-1 text-slate-700">Assigned Inspection Zone / Towers *</label>
+<input type="text" id="smTower" required value="${sup.assignedTower}" placeholder="e.g., Tower A & B or All Towers" class="w-full p-2 border rounded-xl" />
+</div>
+<div class="pt-2 flex gap-2">
+<button type="button" onclick="closeModal()" class="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl">Cancel</button>
+<button type="submit" class="w-2/3 bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 rounded-xl shadow-sm">
+${t('saveSupervisor')}
+</button>
+</div>
+</form>
+`;
+modal.classList.remove('hidden');
+lucide.createIcons();
+}
+
+function handleSaveSupervisor(e, supId, isEdit) {
+ e.preventDefault();
+ const name = document.getElementById('smName').value.trim();
+ const phone = document.getElementById('smPhone').value.trim();
+ const assignedTower = document.getElementById('smTower').value.trim();
+
+ if (isEdit) {
+ const idx = supervisorsList.findIndex(s => s.id === supId);
+ if (idx !== -1) supervisorsList[idx] = { id: supId, name, phone, assignedTower };
+ } else {
+ supervisorsList.push({ id: supId, name, phone, assignedTower });
+ }
+
+ saveData();
+ closeModal();
+ updateRibbon();
+ renderApp();
+ showToast(isEdit ? "Supervisor updated successfully!" : "New supervisor registered!");
+}
+
+function deleteSupervisor(supId) {
+if (supervisorsList.length <= 1) {
+alert("At least 1 supervisor must remain active.");
+return;
+}
+if (confirm("Delete this supervisor record?")) {
+supervisorsList = supervisorsList.filter(s => s.id !== supId);
+if (currentSupervisorId === supId) currentSupervisorId = supervisorsList[0].id;
+saveData();
+updateRibbon();
+renderApp();
+showToast("Supervisor deleted.");
+}
+}
+
+/* -------------------------------------------------------------
+RESIDENT MODALS (SINGLE & CSV)
+------------------------------------------------------------- */
+function openResidentModal(resId = null) {
+const isEdit = resId !== null;
+const res = isEdit ? residentsList.find(r => r.id === resId) : {
+id: "RES-" + (residentsList.length + 1),
+name: "",
+phone: "9820000000",
+tower: buildings[0] ? buildings[0].name : "Tower A",
+wing: "A",
+floor: 1,
+flatNo: "101"
+};
+
+const modal = document.getElementById('globalModal');
+document.getElementById('modalTitle').textContent = isEdit ? "Edit Resident Details" : t('addResident');
+document.getElementById('modalBody').innerHTML = `
+<form onsubmit="handleSaveResident(event, '${res.id}', ${isEdit})" class="space-y-2.5 text-xs">
+<div>
+<label class="block font-semibold mb-1 text-slate-700">Resident Full Name *</label>
+<input type="text" id="rmName" required value="${res.name}" placeholder="e.g., Rajesh Khanna" class="w-full p-2 border rounded-xl" />
+</div>
+
+<div>
+<label class="block font-semibold mb-1 text-slate-700">Phone Number *</label>
+<input type="text" id="rmPhone" required value="${res.phone}" class="w-full p-2 border rounded-xl font-mono" />
+</div>
+
+<div>
+<label class="block font-semibold mb-1 text-slate-700">Assigned Tower *</label>
+<select id="rmTower" class="w-full p-2 border rounded-xl">
+${buildings.map(b => `<option value="${b.name}" ${res.tower === b.name ? 'selected' : ''}>${b.name}</option>`).join('')}
+</select>
+</div>
+
+<div class="grid grid-cols-3 gap-2">
+<div>
+<label class="block font-semibold mb-1 text-slate-700">${t('wing')} *</label>
+<input type="text" id="rmWing" required value="${res.wing}" placeholder="A" class="w-full p-2 border rounded-xl uppercase" />
+</div>
+<div>
+<label class="block font-semibold mb-1 text-slate-700">${t('floor')} *</label>
+<input type="number" id="rmFloor" required min="1" max="99" value="${res.floor}" class="w-full p-2 border rounded-xl" />
+</div>
+<div>
+<label class="block font-semibold mb-1 text-slate-700">${t('flat')} *</label>
+<input type="text" id="rmFlat" required value="${res.flatNo}" placeholder="402" class="w-full p-2 border rounded-xl" />
+</div>
+</div>
+
+<div class="pt-2 flex gap-2">
+<button type="button" onclick="closeModal()" class="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl">Cancel</button>
+<button type="submit" class="w-2/3 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-xl shadow-sm">
+${t('saveResident')}
+</button>
+</div>
+</form>
+`;
+modal.classList.remove('hidden');
+lucide.createIcons();
+}
+
+function handleSaveResident(e, resId, isEdit) {
+ e.preventDefault();
+ const name = document.getElementById('rmName').value.trim();
+ const phone = document.getElementById('rmPhone').value.trim();
+ const tower = document.getElementById('rmTower').value;
+ const wing = document.getElementById('rmWing').value.trim().toUpperCase();
+ const floor = parseInt(document.getElementById('rmFloor').value) || 1;
+ const flatNo = document.getElementById('rmFlat').value.trim();
+
+ if (isEdit) {
+ const idx = residentsList.findIndex(r => r.id === resId);
+ if (idx !== -1) {
+ residentsList[idx] = { id: resId, name, phone, tower, wing, floor, flatNo };
+ }
+ } else {
+ residentsList.push({ id: resId, name, phone, tower, wing, floor, flatNo });
+ }
+
+ saveData();
+ closeModal();
+ updateRibbon();
+ renderApp();
+ showToast(isEdit ? "Resident profile updated!" : "New resident enrolled successfully!");
+}
+
+function deleteResident(resId) {
+if (residentsList.length <= 1) {
+alert("At least 1 resident must be registered.");
+return;
+}
+if (confirm("Delete this resident record?")) {
+residentsList = residentsList.filter(r => r.id !== resId);
+if (currentResidentId === resId) currentResidentId = residentsList[0].id;
+saveData();
+updateRibbon();
+renderApp();
+showToast("Resident deleted.");
+}
+}
+
+function downloadResidentSampleCSV() {
+const sample = `name,flat,floor,tower name,phone number\n` +
+`Rajesh Sharma,402,4,Tower A (Orchid),9820011111\n` +
+`Anita Deshmukh,804,8,Tower B (Lotus),9820022222\n` +
+`Sameer Khan,101,1,Tower C (Tulip),9820033333`;
+
+const blob = new Blob([sample], { type: 'text/csv;charset=utf-8;' });
+const url = URL.createObjectURL(blob);
+const a = document.createElement("a");
+a.href = url;
+a.download = `Residents_Template.csv`;
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+}
+
+function handleResidentCSVUpload(event) {
+const file = event.target.files[0];
+if (!file) return;
+const reader = new FileReader();
+reader.onload = function(e) {
+const lines = e.target.result.split(/\r\n|\n/).filter(l => l.trim().length > 0);
+for (let i = 1; i < lines.length; i++) {
+const parts = lines[i].split(',').map(s => s.trim().replace(/^['"]|['"]$/g, ''));
+if (parts.length >= 2 && parts[0]) {
+residentsList.push({
+id: "RES-" + Date.now() + "-" + i,
+name: parts[0],
+flatNo: parts[1] || "101",
+floor: parseInt(parts[2]) || 1,
+tower: parts[3] || "Tower A (Orchid)",
+wing: "A",
+phone: parts[4] || "9820000000"
+});
+}
+}
+saveData();
+renderApp();
+showToast("Residents imported from CSV!");
+};
+reader.readAsText(file);
+event.target.value = '';
+}
+
+/* -------------------------------------------------------------
+OTHER ACTIONS & HELPERS
+------------------------------------------------------------- */
+function handleResidentComplaint(e) {
+ e.preventDefault();
+ const curRes = residentsList.find(r => r.id === currentResidentId) || residentsList[0];
+ const tower = document.getElementById('compTower').value;
+ const cat = document.getElementById('compCategory').value;
+ const desc = document.getElementById('compDesc').value.trim();
+ const urgency = document.querySelector('input[name="urgency"]:checked').value;
+
+ complaints.unshift({
+ id: "TKT-" + Math.floor(1000 + Math.random() * 9000),
+ residentId: curRes ? curRes.id : "RES-1",
+ flat: curRes ? `${curRes.name} (${curRes.wing}-${curRes.flatNo})` : "Flat 402",
+ tower: tower,
+ category: cat,
+ urgency: urgency,
+ desc: desc,
+ status: "logged",
+ assignedTo: staffList[0] ? staffList[0].name : "Housekeeping Staff",
+ loggedAt: "Just now",
+ residentPhoto: residentTempPhoto,
+ photoProof: null,
+ photoTimestamp: null,
+ geoTag: null,
+ supervisorPhoto: null,
+ rating: null,
+ ratingComment: null
+ });
+
+ residentTempPhoto = null;
+ saveData();
+ renderApp();
+ showToast("Complaint registered!");
+}
+
+function handleUpdateComplexDetails(e) {
+ e.preventDefault();
+ societyProfile.name = document.getElementById('cfgComplexName').value.trim();
+ societyProfile.shortName = document.getElementById('cfgShortName').value.trim();
+ societyProfile.regNo = document.getElementById('cfgRegNo').value.trim();
+ societyProfile.secretaryName = document.getElementById('cfgSecName').value.trim();
+ societyProfile.emergencyContact = document.getElementById('cfgEmergency').value.trim();
+ societyProfile.address = document.getElementById('cfgAddress').value.trim();
+ societyProfile.city = document.getElementById('cfgCity').value.trim();
+ societyProfile.geoLat = document.getElementById('cfgLat').value.trim();
+ societyProfile.geoLong = document.getElementById('cfgLong').value.trim();
+
+ saveData();
+ updateTopBranding();
+ updateRibbon();
+ renderApp();
+ showToast("Society details updated!");
+}
+
+function viewSingleImage(imgSrc, title) {
+const modal = document.getElementById('globalModal');
+document.getElementById('modalTitle').textContent = title;
+document.getElementById('modalBody').innerHTML = `
+<img src="${imgSrc}" class="w-full rounded-xl border mb-2 shadow" />
+<button onclick="closeModal()" class="w-full mt-2 bg-slate-900 text-white py-2 rounded-xl text-xs font-semibold">Close</button>
+`;
+modal.classList.remove('hidden');
+}
+
+function approveProof(ticketId) {
+const ticket = complaints.find(c => c.id === ticketId);
+if (ticket) {
+ticket.status = 'resolved';
+saveData();
+renderApp();
+showToast("Ticket verified and resolved!");
+}
+}
+
+function rejectProof(ticketId) {
+const ticket = complaints.find(c => c.id === ticketId);
+if (ticket) {
+ticket.status = 'assigned';
+ticket.photoProof = null;
+saveData();
+renderApp();
+showToast("Re-clean requested.");
+}
+}
+
+function changeResident(resId) {
+currentResidentId = resId;
+updateRibbon();
+renderApp();
+}
+
+function exportSocietyCSV() {
+let csv = `SOCIETY: ${societyProfile.name}\nSECRETARY: ${societyProfile.secretaryName}\n\nTicket ID,Resident,Category,Urgency,Status\n`;
+complaints.forEach(c => { csv += `"${c.id}","${c.flat}","${c.category}","${c.urgency}","${c.status}"\n`; });
+const blob = new Blob([csv], { type: 'text/csv' });
+const a = document.createElement("a");
+a.href = URL.createObjectURL(blob);
+a.download = `Society_Report.csv`;
+a.click();
+}
+
+function closeModal() { document.getElementById('globalModal').classList.add('hidden'); }
+function showToast(msg) {
+const toast = document.getElementById('toastNotification');
+document.getElementById('toastMessage').textContent = msg;
+toast.classList.remove('opacity-0', 'translate-y-3');
+setTimeout(() => toast.classList.add('opacity-0', 'translate-y-3'), 2500);
+}
+function togglePhoneFrame() { document.getElementById('mainContainer').classList.toggle('phone-container'); }
+
+function renderBottomNav() {
+document.getElementById('bottomNav').innerHTML = `
+<button onclick="switchRole('admin')" class="flex flex-col items-center space-y-0.5 ${currentRole === 'admin' ? 'text-blue-600 font-bold' : ''}"><i data-lucide="settings" class="w-4 h-4"></i><span>${t('admin')}</span></button>
+<button onclick="switchRole('secretary')" class="flex flex-col items-center space-y-0.5 ${currentRole === 'secretary' ? 'text-blue-600 font-bold' : ''}"><i data-lucide="pie-chart" class="w-4 h-4"></i><span>${t('secretary')}</span></button>
+<button onclick="switchRole('resident')" class="flex flex-col items-center space-y-0.5 ${currentRole === 'resident' ? 'text-blue-600 font-bold' : ''}"><i data-lucide="home" class="w-4 h-4"></i><span>${t('resident')}</span></button>
+<button onclick="switchRole('staff')" class="flex flex-col items-center space-y-0.5 ${currentRole === 'staff' ? 'text-blue-600 font-bold' : ''}"><i data-lucide="sparkles" class="w-4 h-4"></i><span>${t('staff')}</span></button>
+<button onclick="switchRole('supervisor')" class="flex flex-col items-center space-y-0.5 ${currentRole === 'supervisor' ? 'text-blue-600 font-bold' : ''}"><i data-lucide="clipboard-check" class="w-4 h-4"></i><span>${t('supervisor')}</span></button>
+`;
+}
+
+function renderApp() {
+const c = document.getElementById('contentArea');
+if (currentRole === 'resident') c.innerHTML = renderResidentView();
+else if (currentRole === 'staff') c.innerHTML = renderStaffView();
+else if (currentRole === 'supervisor') c.innerHTML = renderSupervisorView();
+else if (currentRole === 'secretary') c.innerHTML = renderSecretaryView();
+else c.innerHTML = renderAdminView();
+renderBottomNav();
+lucide.createIcons();
+}
+
+function updateClock() {
+const clk = document.getElementById('androidClock');
+if (clk) clk.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+loadSavedData();
+updateTopBranding();
+updateRibbon();
+renderApp();
+updateClock();
+setInterval(updateClock, 10000);
+});
+</script>
+</body>
+</html>
